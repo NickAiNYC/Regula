@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demand Letter - {{ organization.name }}</title>
+    <style>
+        @page {
+            size: letter;
+            margin: 1in;
+        }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #000;
+        }
+        
+        .letterhead {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+        }
+        
+        .letterhead h1 {
+            margin: 0;
+            font-size: 18pt;
+            font-weight: bold;
+        }
+        
+        .letterhead p {
+            margin: 5px 0;
+            font-size: 10pt;
+        }
+        
+        .date {
+            margin: 20px 0;
+            text-align: right;
+        }
+        
+        .recipient {
+            margin: 20px 0;
+        }
+        
+        .subject {
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .body-text {
+            margin: 15px 0;
+            text-align: justify;
+        }
+        
+        .violations-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 10pt;
+        }
+        
+        .violations-table th {
+            background-color: #f0f0f0;
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .violations-table td {
+            border: 1px solid #000;
+            padding: 6px;
+        }
+        
+        .violations-table .amount {
+            text-align: right;
+        }
+        
+        .total-row {
+            font-weight: bold;
+            background-color: #f8f8f8;
+        }
+        
+        .citation {
+            margin: 10px 0;
+            padding-left: 20px;
+            font-style: italic;
+        }
+        
+        .deadline {
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .signature-block {
+            margin-top: 40px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            font-size: 9pt;
+            color: #666;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="letterhead">
+        <h1>{{ organization.name }}</h1>
+        <p>{{ provider.name }}, NPI: {{ provider.npi }}</p>
+        {% if organization.address %}
+        <p>{{ organization.address.street }}, {{ organization.address.city }}, {{ organization.address.state }} {{ organization.address.zip }}</p>
+        {% endif %}
+    </div>
+    
+    <div class="date">
+        {{ generation_date|date }}
+    </div>
+    
+    <div class="recipient">
+        <strong>{{ payer_address.name }}</strong><br>
+        {{ payer_address.street }}<br>
+        {{ payer_address.city }}, {{ payer_address.state }} {{ payer_address.zip }}
+    </div>
+    
+    <div class="subject">
+        <strong>RE: DEMAND FOR PAYMENT - NY MEDICAID PARITY VIOLATIONS</strong><br>
+        <strong>PROVIDER: {{ provider.name }} (NPI: {{ provider.npi }})</strong>
+    </div>
+    
+    <div class="body-text">
+        <p>Dear Claims Department:</p>
+        
+        <p>This letter serves as formal notice under New York Insurance Law that your organization has systematically underpaid behavioral health claims submitted by {{ provider.name }} in violation of the New York Medicaid Parity Mandate.</p>
+    </div>
+    
+    <div class="body-text">
+        <strong>LEGAL BASIS FOR DEMAND:</strong>
+        
+        <div class="citation">
+            1. <strong>{{ citation_insurance_law }}</strong> requires commercial insurers to reimburse behavioral health services at no less than the applicable Medicaid rate.
+        </div>
+        
+        <div class="citation">
+            2. <strong>{{ citation_parity_mandate }}</strong> establishes mandatory floor rates for behavioral health services in New York State, effective January 1, 2025.
+        </div>
+        
+        <div class="citation">
+            3. <strong>{{ citation_mhpaea }}</strong> prohibits discriminatory non-quantitative treatment limitations (NQTLs) including systematically lower reimbursement rates for behavioral health services.
+        </div>
+    </div>
+    
+    <div class="body-text">
+        <strong>VIOLATIONS IDENTIFIED:</strong>
+        
+        <p>Our analysis has identified <strong>{{ total_claims }}</strong> claims that were reimbursed below the NY Medicaid parity floor rate, resulting in total underpayment of <strong>{{ total_owed|currency }}</strong>.</p>
+    </div>
+    
+    <table class="violations-table">
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Date of Service</th>
+                <th>CPT Code</th>
+                <th class="amount">Billed</th>
+                <th class="amount">Paid</th>
+                <th class="amount">Mandate Rate</th>
+                <th class="amount">Underpayment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for violation in violations %}
+            <tr>
+                <td>{{ violation.claim_id }}</td>
+                <td>{{ violation.dos|date }}</td>
+                <td>{{ violation.cpt_code }}</td>
+                <td class="amount">{{ violation.billed|currency }}</td>
+                <td class="amount">{{ violation.paid|currency }}</td>
+                <td class="amount">{{ violation.mandate|currency }}</td>
+                <td class="amount">{{ violation.delta|currency }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="6" style="text-align: right;"><strong>TOTAL AMOUNT DUE:</strong></td>
+                <td class="amount"><strong>{{ total_owed|currency }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="deadline">
+        <p><strong>DEMAND FOR PAYMENT:</strong></p>
+        
+        <p>{{ organization.name }} hereby demands payment of {{ total_owed|currency }} within thirty (30) days of the date of this letter, no later than <strong>{{ deadline|date }}</strong>.</p>
+    </div>
+    
+    <div class="body-text">
+        <p><strong>CONSEQUENCES OF NON-COMPLIANCE:</strong></p>
+        
+        <p>Failure to remit payment by the deadline will result in:</p>
+        <ul>
+            <li>Filing of formal complaint with the New York State Department of Financial Services (DFS)</li>
+            <li>Request for external review under NY Insurance Law § 4914</li>
+            <li>Potential reporting to the Office of Mental Health (OMH) for systematic parity violations</li>
+            <li>Pursuit of all available legal remedies, including recovery of costs and attorneys' fees</li>
+        </ul>
+    </div>
+    
+    <div class="body-text">
+        <p>Please remit payment to the address listed above and include reference to this demand letter. If you believe any claim listed above was correctly adjudicated, provide detailed written explanation with supporting documentation within 15 days.</p>
+    </div>
+    
+    <div class="signature-block">
+        <p>Sincerely,</p>
+        <br><br>
+        <p>{{ provider.name }}<br>
+        {{ organization.name }}</p>
+    </div>
+    
+    <div class="footer">
+        <p><em>This demand letter was generated by Regula Health compliance software on {{ generation_date|date }}. Document contains Protected Health Information (PHI) - Handle in accordance with HIPAA regulations.</em></p>
+    </div>
+</body>
+</html>
