@@ -147,11 +147,13 @@ async def get_payer_stats(
         return []
     
     # Payer statistics
+    # Count violations using CASE expression for database compatibility
+    from sqlalchemy import case
     payer_stats_stmt = (
         select(
             Claim.payer,
             func.count(Claim.id).label("total_claims"),
-            func.sum(func.cast(Claim.is_violation, db.bind.dialect.BOOLEAN)).label("violations"),
+            func.sum(case((Claim.is_violation == True, 1), else_=0)).label("violations"),
             func.sum(Claim.delta).filter(Claim.is_violation == True).label("recoverable")
         )
         .where(Claim.provider_id.in_(provider_ids))

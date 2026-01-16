@@ -27,13 +27,14 @@ router = APIRouter(prefix="/claims", tags=["Claims"])
 logger = structlog.get_logger()
 
 
-async def get_redis() -> Redis:
+async def get_redis():
     """Get Redis connection"""
+    from contextlib import asynccontextmanager
     redis = Redis.from_url("redis://localhost:6379/0", decode_responses=False)
     try:
         yield redis
     finally:
-        await redis.close()
+        await redis.aclose()
 
 
 @router.post("/upload", response_model=EDIUploadResponse)

@@ -54,9 +54,9 @@ class Settings(BaseSettings):
     MAX_UPLOAD_SIZE: int = 52428800  # 50MB
     UPLOAD_DIR: str = "./uploads"
     
-    # Celery
-    CELERY_BROKER_URL: RedisDsn
-    CELERY_RESULT_BACKEND: RedisDsn
+    # Celery (optional - for background tasks)
+    CELERY_BROKER_URL: Optional[RedisDsn] = None
+    CELERY_RESULT_BACKEND: Optional[RedisDsn] = None
     
     # Email
     SMTP_HOST: Optional[str] = None

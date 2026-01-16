@@ -130,8 +130,11 @@ class AuthService:
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="MFA code required"
                 )
-            # TODO: Implement MFA verification with pyotp
-            pass
+            # MFA verification not yet implemented - block for security
+            raise HTTPException(
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+                detail="MFA verification not yet implemented. Please disable MFA in database or implement pyotp verification."
+            )
         
         # Generate tokens
         tokens = self._create_tokens(user)

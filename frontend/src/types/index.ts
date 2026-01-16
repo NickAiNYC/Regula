@@ -28,7 +28,7 @@ export interface Claim {
   claim_id: string;
   payer: string;
   payer_id: string | null;
-  dos: string; // Date
+  dos: string; // ISO 8601 date string (YYYY-MM-DD)
   cpt_code: string;
   units: number;
   billed_amount: number | null;
@@ -37,8 +37,8 @@ export interface Claim {
   delta: number;
   is_violation: boolean;
   geo_adjustment_factor: number | null;
-  processing_date: string | null;
-  created_at: string;
+  processing_date: string | null; // ISO 8601 datetime string
+  created_at: string; // ISO 8601 datetime string
 }
 
 export interface ClaimFilter {
