@@ -27,6 +27,11 @@ def upgrade() -> None:
     - Partitioning for large-scale storage
     """
     
+    # Ensure required extensions are installed
+    op.execute('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
+    op.execute('CREATE EXTENSION IF NOT EXISTS "timescaledb";')
+    op.execute('CREATE EXTENSION IF NOT EXISTS "pg_trgm";')
+    
     # Create enum types
     op.execute("""
         CREATE TYPE subscription_tier AS ENUM ('trial', 'basic', 'professional', 'enterprise');
@@ -248,7 +253,7 @@ def upgrade() -> None:
     
     # Create data retention policy for old claims (keep 7 years for compliance)
     op.execute("""
-        SELECT add_retention_policy('claims', INTERVAL '7 years', if_not_exists => TRUE);
+        SELECT add_retention_policy('claims', INTERVAL '7 years');
     """)
     
     # Create continuous aggregates for performance
