@@ -45,10 +45,11 @@ services:
       dockerfile: Dockerfile.backend
     container_name: regula_backend
     environment:
-      DATABASE_URL: postgresql://regula:regula_dev_password_2025@postgres:5432/regula_db
+      DATABASE_URL: postgresql+asyncpg://regula:regula_dev_password_2025@postgres:5432/regula_db
       REDIS_URL: redis://redis:6379/0
       SECRET_KEY: dev-secret-key-change-in-production
       ENVIRONMENT: development
+      BACKEND_CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000","http://localhost:80"]'
     ports:
       - "8000:8000"
     volumes:
@@ -63,50 +64,50 @@ services:
       - regula_network
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
-  # Celery Worker for background tasks
-  celery_worker:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-    container_name: regula_celery_worker
-    environment:
-      DATABASE_URL: postgresql://regula:regula_dev_password_2025@postgres:5432/regula_db
-      REDIS_URL: redis://redis:6379/0
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
-    volumes:
-      - ./backend:/app
-      - ./uploads:/app/uploads
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - regula_network
-    command: celery -A tasks worker --loglevel=info
+  # Celery Worker for background tasks (optional - commented out for now)
+  # celery_worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.backend
+  #   container_name: regula_celery_worker
+  #   environment:
+  #     DATABASE_URL: postgresql+asyncpg://regula:regula_dev_password_2025@postgres:5432/regula_db
+  #     REDIS_URL: redis://redis:6379/0
+  #     CELERY_BROKER_URL: redis://redis:6379/0
+  #     CELERY_RESULT_BACKEND: redis://redis:6379/0
+  #   volumes:
+  #     - ./backend:/app
+  #     - ./uploads:/app/uploads
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - regula_network
+  #   command: celery -A tasks worker --loglevel=info
 
-  # Celery Beat for scheduled tasks
-  celery_beat:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-    container_name: regula_celery_beat
-    environment:
-      DATABASE_URL: postgresql://regula:regula_dev_password_2025@postgres:5432/regula_db
-      REDIS_URL: redis://redis:6379/0
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
-    volumes:
-      - ./backend:/app
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - regula_network
-    command: celery -A tasks beat --loglevel=info
+  # Celery Beat for scheduled tasks (optional - commented out for now)
+  # celery_beat:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.backend
+  #   container_name: regula_celery_beat
+  #   environment:
+  #     DATABASE_URL: postgresql+asyncpg://regula:regula_dev_password_2025@postgres:5432/regula_db
+  #     REDIS_URL: redis://redis:6379/0
+  #     CELERY_BROKER_URL: redis://redis:6379/0
+  #     CELERY_RESULT_BACKEND: redis://redis:6379/0
+  #   volumes:
+  #     - ./backend:/app
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - regula_network
+  #   command: celery -A tasks beat --loglevel=info
 
   # React Frontend (development)
   frontend:
