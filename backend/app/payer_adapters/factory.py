@@ -87,7 +87,7 @@ class PayerAdapterFactory:
             )
 
         # Instantiate and return
-        return adapter_class()
+        return adapter_class()  # type: ignore[call-arg]
 
     @classmethod
     def list_supported_payers(cls) -> list[str]:

@@ -293,6 +293,10 @@ class AppealPipeline:
         payment_date = claim_data.get("payment_date")
         if isinstance(payment_date, str):
             payment_date = datetime.fromisoformat(payment_date).date()
+        
+        if payment_date is None:
+            # If no payment date, use 180 days from today as a fallback
+            payment_date = datetime.now().date()
 
         deadline = payment_date + timedelta(days=180)
         return deadline.isoformat()

@@ -5,7 +5,7 @@ API key-based authentication with usage tracking and billing.
 """
 
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 from fastapi import HTTPException, Security, status
 from fastapi.security.api_key import APIKeyHeader
 import structlog
@@ -112,7 +112,7 @@ class UsageMetering:
     """
 
     # In-memory storage (in production, use Redis + TimescaleDB)
-    usage_data = {}
+    usage_data: Dict[str, Any] = {}
 
     @classmethod
     async def record_usage(

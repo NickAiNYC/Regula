@@ -15,7 +15,7 @@ Key Metric: "Regula Recovery Yield" = Total Recovered / Total Underpaid
 
 from datetime import datetime, date
 from decimal import Decimal
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from collections import defaultdict
 import structlog
 
@@ -214,7 +214,7 @@ class RecoveryTracker:
         )
 
         # Payer breakdown
-        payer_stats = defaultdict(
+        payer_stats: Dict[str, Dict[str, Any]] = defaultdict(
             lambda: {"count": 0, "recovered": Decimal("0"), "underpaid": Decimal("0")}
         )
         for r in filtered_recoveries:
@@ -332,7 +332,9 @@ class RecoveryTracker:
         avg_days = sum(days_pending) / len(days_pending) if days_pending else 0
 
         # Group by payer
-        by_payer = defaultdict(lambda: {"count": 0, "amount": Decimal("0")})
+        by_payer: Dict[str, Dict[str, Any]] = defaultdict(
+            lambda: {"count": 0, "amount": Decimal("0")}
+        )
         for appeal in self.pending_appeals:
             payer = appeal.get("payer", "Unknown")
             by_payer[payer]["count"] += 1

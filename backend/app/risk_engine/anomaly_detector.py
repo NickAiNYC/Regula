@@ -10,7 +10,7 @@ Helps providers avoid audits and optimize revenue cycle.
 """
 
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from collections import defaultdict
 import structlog
 
@@ -126,13 +126,13 @@ class AnomalyDetector:
         - Sudden spikes (possible upcoding or billing errors)
         - Sudden drops (possible system issues)
         """
-        anomalies = []
+        anomalies: List[Dict[str, Any]] = []
 
         if not baseline or len(claims_data) < self.MIN_SAMPLES_FOR_DETECTION:
             return anomalies
 
         # Calculate current volume by CPT code
-        current_volumes = defaultdict(int)
+        current_volumes: Dict[str, int] = defaultdict(int)
         for claim in claims_data:
             current_volumes[claim.get("cpt_code", "")] += 1
 
@@ -176,13 +176,13 @@ class AnomalyDetector:
 
         Identifies payments that are statistical outliers
         """
-        anomalies = []
+        anomalies: List[Dict[str, Any]] = []
 
         if len(claims_data) < self.MIN_SAMPLES_FOR_DETECTION:
             return anomalies
 
         # Group payments by CPT code
-        payments_by_cpt = defaultdict(list)
+        payments_by_cpt: Dict[str, List[Any]] = defaultdict(list)
         for claim in claims_data:
             cpt = claim.get("cpt_code")
             paid = claim.get("paid_amount")
@@ -290,10 +290,10 @@ class AnomalyDetector:
         """
         Detect unusual temporal billing patterns
         """
-        anomalies = []
+        anomalies: List[Dict[str, Any]] = []
 
         # Check for unusual billing day patterns
-        day_of_week_counts = defaultdict(int)
+        day_of_week_counts: Dict[int, int] = defaultdict(int)
         for claim in claims_data:
             dos = claim.get("service_date")
             if dos:
@@ -326,10 +326,10 @@ class AnomalyDetector:
         """
         Detect unusual payer concentration patterns
         """
-        anomalies = []
+        anomalies: List[Dict[str, Any]] = []
 
         # Calculate payer distribution
-        payer_counts = defaultdict(int)
+        payer_counts: Dict[str, int] = defaultdict(int)
         for claim in claims_data:
             payer_counts[claim.get("payer", "Unknown")] += 1
 

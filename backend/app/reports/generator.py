@@ -5,7 +5,7 @@ PDF generation for demand letters, appeals, and reports
 
 from datetime import date, timedelta
 from decimal import Decimal
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from pathlib import Path
 import structlog
 from jinja2 import Environment, FileSystemLoader
@@ -214,7 +214,7 @@ class DocumentGenerator:
         violation_rate = (len(violations) / len(claims) * 100) if claims else 0
 
         # Group by payer
-        payer_stats = {}
+        payer_stats: Dict[str, Dict[str, Any]] = {}
         for claim in violations:
             if claim.payer not in payer_stats:
                 payer_stats[claim.payer] = {"count": 0, "total": Decimal("0.00")}
@@ -223,7 +223,9 @@ class DocumentGenerator:
 
         # Sort by total owed
         top_violators = sorted(
-            payer_stats.items(), key=lambda x: x[1]["total"], reverse=True
+            payer_stats.items(),
+            key=lambda x: float(x[1]["total"]),  # type: ignore[arg-type]
+            reverse=True,
         )[:10]
 
         template = self.jinja_env.get_template("reports/executive_summary.html")
@@ -264,7 +266,7 @@ class DocumentGenerator:
         Returns:
             Dict of {payer_name: pdf_bytes}
         """
-        results = {}
+        results: Dict[str, Optional[bytes]] = {}
 
         for payer_name, violations in violations_by_payer.items():
             try:

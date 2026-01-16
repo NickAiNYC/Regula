@@ -42,10 +42,10 @@ class WorkflowStep:
         self.retry_count = retry_count
         self.timeout = timeout
         self.status = WorkflowStatus.PENDING
-        self.result = None
-        self.error = None
-        self.started_at = None
-        self.completed_at = None
+        self.result: Any = None
+        self.error: Optional[str] = None
+        self.started_at: Optional[datetime] = None
+        self.completed_at: Optional[datetime] = None
 
     async def execute(self, context: Dict) -> Any:
         """Execute step with retry logic"""
@@ -101,8 +101,8 @@ class WorkflowEngine:
         self.steps: List[WorkflowStep] = []
         self.status = WorkflowStatus.PENDING
         self.context: Dict[str, Any] = {}
-        self.started_at = None
-        self.completed_at = None
+        self.started_at: Optional[datetime] = None
+        self.completed_at: Optional[datetime] = None
         self.current_step_index = 0
 
     def add_step(
@@ -170,7 +170,11 @@ class WorkflowEngine:
 
             raise
 
-        duration = (self.completed_at - self.started_at).total_seconds()
+        duration = (
+            (self.completed_at - self.started_at).total_seconds()
+            if self.completed_at and self.started_at
+            else 0
+        )
 
         return {
             "workflow_id": self.workflow_id,

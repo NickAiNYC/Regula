@@ -121,10 +121,13 @@ class PHIEncryption:
                 raise ValueError("HIPAA_ENCRYPTION_KEY must be set in production")
 
         # Ensure key is properly formatted
+        key_bytes: bytes
         if isinstance(key, str):
-            key = key.encode()
+            key_bytes = key.encode()
+        else:
+            key_bytes = key
 
-        self.cipher = Fernet(key)
+        self.cipher = Fernet(key_bytes)
 
     def encrypt(self, data: str) -> str:
         """
