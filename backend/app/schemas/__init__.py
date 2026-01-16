@@ -6,7 +6,7 @@ Request/response validation with type safety
 from datetime import datetime, date
 from decimal import Decimal
 from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from uuid import UUID
 
 
@@ -14,8 +14,10 @@ from uuid import UUID
 # Authentication Schemas
 # ============================================================================
 
+
 class Token(BaseModel):
     """JWT token response"""
+
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
@@ -23,12 +25,14 @@ class Token(BaseModel):
 
 class TokenPayload(BaseModel):
     """JWT token payload"""
+
     sub: Optional[str] = None
     exp: Optional[int] = None
 
 
 class UserLogin(BaseModel):
     """User login request"""
+
     email: EmailStr
     password: str = Field(..., min_length=8)
     mfa_code: Optional[str] = Field(None, min_length=6, max_length=6)
@@ -36,6 +40,7 @@ class UserLogin(BaseModel):
 
 class UserRegister(BaseModel):
     """User registration request"""
+
     email: EmailStr
     password: str = Field(..., min_length=8)
     full_name: str = Field(..., min_length=2, max_length=255)
@@ -45,8 +50,9 @@ class UserRegister(BaseModel):
 
 class UserResponse(BaseModel):
     """User response"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     email: EmailStr
     full_name: Optional[str]
@@ -60,8 +66,10 @@ class UserResponse(BaseModel):
 # Organization Schemas
 # ============================================================================
 
+
 class OrganizationBase(BaseModel):
     """Base organization schema"""
+
     name: str = Field(..., min_length=2, max_length=255)
     ein: Optional[str] = Field(None, min_length=9, max_length=9)
     address: Optional[Dict[str, Any]] = None
@@ -69,8 +77,9 @@ class OrganizationBase(BaseModel):
 
 class OrganizationResponse(OrganizationBase):
     """Organization response"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     is_active: bool
     subscription_tier: Optional[str]
@@ -81,8 +90,10 @@ class OrganizationResponse(OrganizationBase):
 # Provider Schemas
 # ============================================================================
 
+
 class ProviderBase(BaseModel):
     """Base provider schema"""
+
     npi: str = Field(..., min_length=10, max_length=10)
     name: str = Field(..., min_length=2, max_length=255)
     specialty: Optional[str] = None
@@ -91,13 +102,15 @@ class ProviderBase(BaseModel):
 
 class ProviderCreate(ProviderBase):
     """Provider creation request"""
+
     pass
 
 
 class ProviderResponse(ProviderBase):
     """Provider response"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     organization_id: UUID
     created_at: datetime
@@ -107,8 +120,10 @@ class ProviderResponse(ProviderBase):
 # Claim Schemas
 # ============================================================================
 
+
 class ClaimBase(BaseModel):
     """Base claim schema"""
+
     claim_id: str = Field(..., max_length=50)
     payer: str = Field(..., max_length=100)
     dos: date
@@ -119,8 +134,9 @@ class ClaimBase(BaseModel):
 
 class ClaimResponse(ClaimBase):
     """Claim response with violation detection"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     provider_id: UUID
     mandate_rate: Decimal
@@ -133,6 +149,7 @@ class ClaimResponse(ClaimBase):
 
 class ClaimListResponse(BaseModel):
     """Paginated claim list response"""
+
     claims: List[ClaimResponse]
     total: int
     page: int
@@ -142,6 +159,7 @@ class ClaimListResponse(BaseModel):
 
 class ClaimFilter(BaseModel):
     """Claim filtering parameters"""
+
     payer: Optional[str] = None
     cpt_code: Optional[str] = None
     dos_start: Optional[date] = None
@@ -154,21 +172,25 @@ class ClaimFilter(BaseModel):
 # Appeal Schemas
 # ============================================================================
 
+
 class AppealBase(BaseModel):
     """Base appeal schema"""
+
     appeal_type: str = Field(..., pattern="^(internal|external|dfs_complaint)$")
     notes: Optional[str] = None
 
 
 class AppealCreate(AppealBase):
     """Appeal creation request"""
+
     claim_id: UUID
 
 
 class AppealResponse(AppealBase):
     """Appeal response"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     claim_id: UUID
     filed_date: date
@@ -182,8 +204,10 @@ class AppealResponse(AppealBase):
 # Dashboard/Analytics Schemas
 # ============================================================================
 
+
 class DashboardMetrics(BaseModel):
     """Dashboard summary metrics"""
+
     total_claims: int
     violations: int
     violation_rate: float = Field(..., ge=0, le=100)
@@ -195,6 +219,7 @@ class DashboardMetrics(BaseModel):
 
 class PayerStats(BaseModel):
     """Payer-specific statistics"""
+
     payer: str
     total_claims: int
     violations: int
@@ -204,6 +229,7 @@ class PayerStats(BaseModel):
 
 class TimeSeriesData(BaseModel):
     """Time series data for charts"""
+
     date: date
     violations: int
     recoverable: Decimal
@@ -213,8 +239,10 @@ class TimeSeriesData(BaseModel):
 # EDI Upload Schemas
 # ============================================================================
 
+
 class EDIUploadResponse(BaseModel):
     """EDI file upload response"""
+
     message: str
     file_name: str
     claims_processed: int
@@ -226,7 +254,9 @@ class EDIUploadResponse(BaseModel):
 # Error Schemas
 # ============================================================================
 
+
 class ErrorResponse(BaseModel):
     """Standard error response"""
+
     detail: str
     error_code: Optional[str] = None

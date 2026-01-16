@@ -12,7 +12,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.pool import NullPool
 
-from app.main import app
+from main import app
 from app.db.session import Base, get_db
 from app.models import Organization, User, Provider, RateDatabase
 from app.core.security import get_password_hash
@@ -34,20 +34,16 @@ def event_loop() -> Generator:
 @pytest.fixture(scope="function")
 async def db_engine():
     """Create test database engine"""
-    engine = create_async_engine(
-        TEST_DATABASE_URL,
-        poolclass=NullPool,
-        echo=False
-    )
-    
+    engine = create_async_engine(TEST_DATABASE_URL, poolclass=NullPool, echo=False)
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     yield engine
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-    
+
     await engine.dispose()
 
 
@@ -55,11 +51,9 @@ async def db_engine():
 async def db_session(db_engine) -> AsyncGenerator[AsyncSession, None]:
     """Create test database session"""
     async_session = async_sessionmaker(
-        db_engine,
-        class_=AsyncSession,
-        expire_on_commit=False
+        db_engine, class_=AsyncSession, expire_on_commit=False
     )
-    
+
     async with async_session() as session:
         yield session
 
@@ -67,15 +61,15 @@ async def db_session(db_engine) -> AsyncGenerator[AsyncSession, None]:
 @pytest.fixture(scope="function")
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """Create test HTTP client"""
-    
+
     async def override_get_db():
         yield db_session
-    
+
     app.dependency_overrides[get_db] = override_get_db
-    
+
     async with AsyncClient(app=app, base_url="http://test") as client:
         yield client
-    
+
     app.dependency_overrides.clear()
 
 
@@ -87,7 +81,7 @@ async def test_organization(db_session: AsyncSession) -> Organization:
         name="Test Behavioral Health",
         ein="123456789",
         is_active=True,
-        subscription_tier="enterprise"
+        subscription_tier="enterprise",
     )
     db_session.add(org)
     await db_session.commit()
@@ -106,7 +100,7 @@ async def test_user(db_session: AsyncSession, test_organization: Organization) -
         full_name="Test User",
         is_active=True,
         is_superuser=False,
-        role="admin"
+        role="admin",
     )
     db_session.add(user)
     await db_session.commit()
@@ -115,7 +109,9 @@ async def test_user(db_session: AsyncSession, test_organization: Organization) -
 
 
 @pytest.fixture
-async def test_provider(db_session: AsyncSession, test_organization: Organization) -> Provider:
+async def test_provider(
+    db_session: AsyncSession, test_organization: Organization
+) -> Provider:
     """Create test provider"""
     provider = Provider(
         id=uuid.uuid4(),
@@ -123,7 +119,7 @@ async def test_provider(db_session: AsyncSession, test_organization: Organizatio
         npi="1234567890",
         name="Dr. Test Provider",
         specialty="Psychiatry",
-        geo_region="nyc"
+        geo_region="nyc",
     )
     db_session.add(provider)
     await db_session.commit()
@@ -142,7 +138,7 @@ async def test_rates(db_session: AsyncSession):
             base_rate_2024=Decimal("153.50"),
             cola_rate_2025=Decimal("158.00"),
             effective_date=date(2025, 1, 1),
-            source="Test Data"
+            source="Test Data",
         ),
         RateDatabase(
             cpt_code="90834",
@@ -151,13 +147,13 @@ async def test_rates(db_session: AsyncSession):
             base_rate_2024=Decimal("107.00"),
             cola_rate_2025=Decimal("110.00"),
             effective_date=date(2025, 1, 1),
-            source="Test Data"
+            source="Test Data",
         ),
     ]
-    
+
     for rate in rates:
         db_session.add(rate)
-    
+
     await db_session.commit()
     return rates
 
@@ -191,6 +187,6 @@ IEA*1*000000001~"""
 async def auth_headers(test_user: User) -> dict:
     """Generate authentication headers for test user"""
     from app.core.security import create_access_token
-    
+
     token = create_access_token({"sub": str(test_user.id)})
     return {"Authorization": f"Bearer {token}"}

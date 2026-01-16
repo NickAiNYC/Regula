@@ -1,0 +1,11 @@
+[tool.bandit]
+# Bandit configuration for Regula Health Platform
+# Suppress false positives while maintaining security scanning
+
+# Skip specific tests
+# B110: try_except_pass - Used for safe decimal parsing where silent failure is expected
+# B107: hardcoded_password_funcarg - False positive on OAuth 'bearer' token type string
+skips = ["B110", "B107"]
+
+# Exclude test directories
+exclude_dirs = ["/tests/", "/test_/"]
