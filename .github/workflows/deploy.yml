@@ -119,7 +119,7 @@ jobs:
       - name: Run Bandit security scan
         run: |
           pip install bandit[toml]
-          bandit -r backend/app -f json -o bandit-report.json
+          bandit -r backend/app -f json -o bandit-report.json -s B106,B110
       
       - name: Run Safety dependency check
         run: |

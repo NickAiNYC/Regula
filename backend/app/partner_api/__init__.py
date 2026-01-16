@@ -21,4 +21,7 @@ __all__ = [
     "create_partner_app",
     "APIKeyAuth",
     "UsageMetering",
+    "compliance_check",
+    "batch_analysis",
+    "webhook_register",
 ]

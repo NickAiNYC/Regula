@@ -27,7 +27,7 @@ RATE_DATA = [
         "base_rate_2024": Decimal("153.50"),
         "cola_rate_2025": Decimal("158.00"),
         "effective_date": date(2025, 1, 1),
-        "source": "NYS OMH Rate Schedule 2025"
+        "source": "NYS OMH Rate Schedule 2025",
     },
     {
         "cpt_code": "90834",
@@ -36,7 +36,7 @@ RATE_DATA = [
         "base_rate_2024": Decimal("107.00"),
         "cola_rate_2025": Decimal("110.00"),
         "effective_date": date(2025, 1, 1),
-        "source": "NYS OMH Rate Schedule 2025"
+        "source": "NYS OMH Rate Schedule 2025",
     },
     {
         "cpt_code": "90832",
@@ -45,7 +45,7 @@ RATE_DATA = [
         "base_rate_2024": Decimal("71.50"),
         "cola_rate_2025": Decimal("73.50"),
         "effective_date": date(2025, 1, 1),
-        "source": "NYS OMH Rate Schedule 2025"
+        "source": "NYS OMH Rate Schedule 2025",
     },
     {
         "cpt_code": "90791",
@@ -54,21 +54,21 @@ RATE_DATA = [
         "base_rate_2024": Decimal("170.00"),
         "cola_rate_2025": Decimal("175.00"),
         "effective_date": date(2025, 1, 1),
-        "source": "NYS OMH Rate Schedule 2025"
-    }
+        "source": "NYS OMH Rate Schedule 2025",
+    },
 ]
 
 
 async def seed_rates(db: AsyncSession):
     """Seed rate database with NY Medicaid 2025 rates"""
-    
+
     print("Seeding rate database...")
-    
+
     for rate_data in RATE_DATA:
         rate = RateDatabase(**rate_data)
         db.add(rate)
         print(f"  Added {rate.cpt_code}: {rate.description}")
-    
+
     await db.commit()
     print(f"\nSuccessfully seeded {len(RATE_DATA)} rates!")
 
