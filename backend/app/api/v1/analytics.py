@@ -185,12 +185,23 @@ async def get_enhanced_dashboard(
     """
     Get enhanced dashboard with comprehensive analytics
 
+    **Status**: Phase 2 Implementation - Core metrics complete, some features pending
+
     Returns production-grade metrics including:
-    - Executive KPIs with trends
-    - Geographic breakdown
-    - Payer performance matrix
-    - Recovery analytics
+    - Executive KPIs with trends ✅
+    - Geographic breakdown (partial - per-region details pending)
+    - Payer performance matrix ✅
+    - Recent violations ✅
+    - Recovery analytics (framework in place, queries pending)
     - Real-time processing stats
+
+    **Placeholder Fields**:
+    - RecoveryPipelineMetrics: Requires appeals/recovered_payments table queries
+    - GeographicViolation.violation_rate: Needs total claims per region
+    - GeographicViolation.top_payers: Requires per-region payer breakdown
+    - GeographicViolation.provider_count: Needs distinct provider count
+    - ClaimDetail.cpt_description: Requires CPT code lookup table
+    - RecoveryAnalytics: Time-series and funnel queries pending
     """
     from app.schemas.dashboard import (
         EnhancedDashboardResponse,
@@ -309,10 +320,10 @@ async def get_enhanced_dashboard(
             raw_value=float(violations),
         ),
         recovery_pipeline=RecoveryPipelineMetrics(
-            in_appeal=Decimal("0.00"),  # TODO: Query from appeals table
-            recovered=Decimal("0.00"),  # TODO: Query recovered amounts
-            success_rate=76.4,
-            pending_count=0,
+            in_appeal=Decimal("0.00"),  # Placeholder: Requires appeals table query
+            recovered=Decimal("0.00"),  # Placeholder: Requires recovered_payments table
+            success_rate=0.0,  # Placeholder: Calculated from appeals data
+            pending_count=0,  # Placeholder: Count from appeals table
         ),
     )
 
@@ -357,9 +368,9 @@ async def get_enhanced_dashboard(
                     ),
                     violation_count=count or 0,
                     total_amount=amount or Decimal("0.00"),
-                    violation_rate=0.0,  # TODO: Calculate
-                    top_payers=[],  # TODO: Query top payers per region
-                    provider_count=1,  # TODO: Count providers
+                    violation_rate=0.0,  # Placeholder: Needs total claims per region
+                    top_payers=[],  # Placeholder: Requires per-region payer query
+                    provider_count=0,  # Placeholder: Count distinct providers in region
                 )
             )
 
