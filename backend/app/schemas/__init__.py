@@ -9,6 +9,25 @@ from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from uuid import UUID
 
+# Import enhanced dashboard schemas
+from .dashboard import (
+    ExecutiveMetrics,
+    ExecutiveMetricCard,
+    TrendData,
+    RecoveryPipelineMetrics,
+    GeographicBreakdown,
+    GeographicViolation,
+    PayerPerformance,
+    PayerPerformanceMatrix,
+    ClaimDetail,
+    ClaimsExplorerResponse,
+    RecoveryAnalytics,
+    MonthlyRecoveryTrend,
+    CPTPerformance,
+    RecoveryFunnelStage,
+    EnhancedDashboardResponse,
+)
+
 
 # ============================================================================
 # Authentication Schemas

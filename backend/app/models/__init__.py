@@ -228,7 +228,7 @@ class AuditLog(Base):
     before_state = Column(JSONB)
     after_state = Column(JSONB)
 
-    metadata = Column(JSONB)
+    additional_metadata = Column(JSONB)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

@@ -12,7 +12,7 @@ Features:
 """
 
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 import structlog
 
 logger = structlog.get_logger()
@@ -50,7 +50,7 @@ class PredictiveUnderpaymentScorer:
         # Model metadata
         self.model_version = "1.0.0"
         self.trained_date = None
-        self.performance_metrics = {}
+        self.performance_metrics: Dict[str, Any] = {}
 
         # Load model if path provided
         if model_path:

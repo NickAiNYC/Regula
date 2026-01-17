@@ -286,13 +286,31 @@ class AppealPipeline:
     # Helper methods
 
     def _calculate_deadline(self, claim_data: Dict) -> str:
-        """Calculate appeal submission deadline"""
+        """
+        Calculate appeal submission deadline
+
+        Most payers: 180 days from payment date
+
+        Note: If payment_date is not provided, uses current date as fallback.
+        This is a conservative approach that gives the maximum time window,
+        but may result in incorrect deadlines if the actual payment occurred earlier.
+        """
         # Most payers: 180 days from payment
         from datetime import timedelta
 
         payment_date = claim_data.get("payment_date")
         if isinstance(payment_date, str):
             payment_date = datetime.fromisoformat(payment_date).date()
+
+        if payment_date is None:
+            # Fallback to current date (conservative: gives full 180 days)
+            # WARNING: This may not reflect the actual deadline if payment occurred earlier
+            logger.warning(
+                "appeal_deadline_fallback",
+                claim_id=claim_data.get("claim_id"),
+                message="Using current date for deadline calculation - payment_date not provided",
+            )
+            payment_date = datetime.now().date()
 
         deadline = payment_date + timedelta(days=180)
         return deadline.isoformat()

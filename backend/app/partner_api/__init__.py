@@ -15,13 +15,13 @@ Features:
 
 from .main import create_partner_app
 from .auth import APIKeyAuth, UsageMetering
-from .endpoints import compliance_check, batch_analysis, webhook_register
+from .endpoints import check_claim_compliance, batch_compliance_check, register_webhook
 
 __all__ = [
     "create_partner_app",
     "APIKeyAuth",
     "UsageMetering",
-    "compliance_check",
-    "batch_analysis",
-    "webhook_register",
+    "check_claim_compliance",
+    "batch_compliance_check",
+    "register_webhook",
 ]
