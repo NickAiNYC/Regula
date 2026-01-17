@@ -20,25 +20,12 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Virtual Environment
 venv/
 ENV/
 env/
-
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnp
-.pnp.js
-dist/
-dist-ssr/
-*.local
-
-# Environment
-.env
-.env.local
-.env.*.local
+.venv
 
 # IDE
 .vscode/
@@ -47,30 +34,44 @@ dist-ssr/
 *.swo
 *~
 
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variables
+.env
+.env.local
+.env.prod
+
+# Database
+*.db
+*.sqlite3
+postgres_data/
+
+# Logs
+*.log
+logs/
+
 # OS
 .DS_Store
 Thumbs.db
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Streamlit
+.streamlit/
 
-# Logs
-logs/
-*.log
-
-# Uploads
-uploads/
-*.835
-
-# Testing
-.coverage
-htmlcov/
-.pytest_cache/
-coverage/
+# Node modules (if any frontend)
+node_modules/
 
 # Build artifacts
 *.pyc
-.cache/
-bandit-report.json
+.pytest_cache/
+
+# ML Models
+*.pkl
+*.joblib
+*.h5
+models/
+
+# Data files
+data/
+*.csv
+!sample_buildings.csv

@@ -1,0 +1,39 @@
+name: Deploy to Streamlit Cloud
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'streamlit/**'
+      - 'requirements.txt'
+      - '.github/workflows/streamlit-deploy.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Test Streamlit app
+      run: |
+        cd streamlit
+        python -c "import streamlit; print('Streamlit imported successfully')"
+    
+    - name: Deploy notification
+      run: |
+        echo "Ready for Streamlit Cloud deployment"
+        echo "Visit: https://share.streamlit.io/"
